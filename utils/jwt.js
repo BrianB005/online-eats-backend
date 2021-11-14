@@ -17,7 +17,8 @@ const attachCookiesToResponse = ({ res, user }) => {
     expires: new Date(Date.now() + twoDays),
     signed: true,
     sameSite:'none',
-    secure: true
+    secure: true,
+    domain:'https://online-eats.netlify.app'
   });
 };
 
