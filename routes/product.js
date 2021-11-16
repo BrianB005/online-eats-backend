@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const {
   authenticateUser,
   authorizePermissions,
-} = require('../middleware/authentication');
+} = require("../middleware/authentication");
 
 const {
   createProduct,
@@ -13,26 +13,22 @@ const {
   deleteProduct,
   searchProducts,
   getAllCategories,
-  searchCategoryProducts
-} = require('../controllers/productController');
-
-
+  searchCategoryProducts,
+} = require("../controllers/productController");
 
 router
-  .route('/')
-  .post([authenticateUser, authorizePermissions('vendor')], createProduct)
+  .route("/")
+  .post([authenticateUser, authorizePermissions("vendor")], createProduct)
   .get(getAllProducts);
 
-
 router
-  .route('/find/:id')
+  .route("/find/:id")
   .get(getSingleProduct)
-  .patch([authenticateUser, authorizePermissions('vendor')], updateProduct)
-  .delete([authenticateUser, authorizePermissions('vendor')], deleteProduct);
+  .put([authenticateUser, authorizePermissions("vendor")], updateProduct)
+  .delete([authenticateUser, authorizePermissions("vendor")], deleteProduct);
 
-
-router.route('/search').get(searchProducts);
-router.route('/category').get(searchCategoryProducts);
-router.route('/categories').get(getAllCategories);
+router.route("/search").get(searchProducts);
+router.route("/category").get(searchCategoryProducts);
+router.route("/categories").get(getAllCategories);
 
 module.exports = router;
