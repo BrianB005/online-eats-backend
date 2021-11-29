@@ -1,20 +1,20 @@
-const User = require('../models/User');
-const { StatusCodes } = require('http-status-codes');
-const CustomError = require('../errors');
+const User = require("../models/User");
+const { StatusCodes } = require("http-status-codes");
+const CustomError = require("../errors");
 const {
   attachCookiesToResponse,
   authorizeUser,
   UserTokenPayload,
-} = require('../utils');
+} = require("../utils");
 
 const getAllUsers = async (req, res) => {
   console.log(req.user);
-  const users = await User.find({ role: 'user' }).select('-password');
+  const users = await User.find({ role: "user" }).select("-password");
   res.status(StatusCodes.OK).json({ users });
 };
 
 const getSingleUser = async (req, res) => {
-  const user = await User.findOne({ _id: req.params.id }).select('-password');
+  const user = await User.findOne({ _id: req.params.id }).select("-password");
   if (!user) {
     throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);
   }
@@ -22,12 +22,14 @@ const getSingleUser = async (req, res) => {
   res.status(StatusCodes.OK).json({ user });
 };
 const deleteUser = async (req, res) => {
-  const user = await User.findOneAndDelete({ _id: req.user.userId})
+  const user = await User.findOneAndDelete({ _id: req.user.userId });
   if (!user) {
     throw new CustomError.NotFoundError(`No user with id : ${req.user.userId}`);
   }
   authorizeUser(req.user, user._id);
-  res.status(StatusCodes.OK).json({msg:`Your Account has been deleted successfully`});
+  res
+    .status(StatusCodes.OK)
+    .json({ msg: `Your Account has been deleted successfully` });
 };
 
 const showCurrentUser = async (req, res) => {
@@ -37,7 +39,7 @@ const showCurrentUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { email, name } = req.body;
   if (!email || !name) {
-    throw new CustomError.BadRequestError('Please fill all the fields');
+    throw new CustomError.BadRequestError("Please fill all the fields");
   }
   const user = await User.findOne({ _id: req.user.userId });
 
@@ -53,45 +55,49 @@ const updateUser = async (req, res) => {
 const updateUserPassword = async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   if (!oldPassword || !newPassword) {
-    throw new CustomError.BadRequestError('Please provide both values');
+    throw new CustomError.BadRequestError("Please provide both values");
   }
   const user = await User.findOne({ _id: req.user.userId });
 
   const isOldPasswordCorrect = await user.comparePassword(oldPassword);
   if (!isOldPasswordCorrect) {
-    throw new CustomError.UnauthenticatedError('Wrong password!!Kindly recheck your old password');
+    throw new CustomError.UnauthenticatedError(
+      "Wrong password!!Kindly recheck your old password"
+    );
   }
   user.password = newPassword;
 
   await user.save();
-  res.status(StatusCodes.OK).json({ msg: 'Success! Password Updated.' });
+  res.status(StatusCodes.OK).json({ msg: "Success! Password Updated." });
 };
-
 
 const updateUserRole = async (req, res) => {
   const user = await User.findOne({ _id: req.params.id });
-  if(!user){
+  if (!user) {
     throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);
   }
   user.role = req.body.role;
   await user.save();
 
-  res.status(201).json({"msg":`User with name ${user.name} has their role updated to  ${req.body.role}`})
+  res
+    .status(201)
+    .json({
+      msg: `User with name ${user.name} has their role updated to  ${req.body.role}`,
+    });
 };
 const getALlVendors = async (req, res) => {
-  const allVendors= await User.find({role:"vendor"}).select('-password');
+  const allVendors = await User.find({ role: "vendor" }).select("-password");
   // console.log(allVendors);
-  if(!allVendors){
+  if (!allVendors) {
     throw new CustomError.NotFoundError(`There are no vendors currently`);
   }
 
-  res.status(201).json({vendors:allVendors})
+  res.status(201).json({ vendors: allVendors });
 };
 const getALlAdmins = async (req, res) => {
-  const allAdmins= await User.find({role:"admin"}).select('-password');
-  
+  const allAdmins = await User.find({ role: "admin" }).select("-password");
 
-  res.status(201).json({admins:allAdmins})
+  res.status(201).json({ admins: allAdmins });
 };
 
 module.exports = {
@@ -103,7 +109,5 @@ module.exports = {
   updateUserRole,
   deleteUser,
   getALlVendors,
-  getALlAdmins
+  getALlAdmins,
 };
-
-
