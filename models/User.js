@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema(
       default: "user",
     },
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 UserSchema.pre("save", async function () {
